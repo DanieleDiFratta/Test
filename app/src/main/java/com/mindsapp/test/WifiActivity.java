@@ -36,24 +36,16 @@ public class WifiActivity extends AppCompatActivity {
                 displayResults(wifi.getScanResults());
             }
         };
-        registerReceiver(br, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        br = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                wifi.startScan();
-                displayResults(wifi.getScanResults());
-            }
-        };
         registerReceiver(br, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
     private  void displayResults(List<ScanResult> scanResults) {
-        ArrayList<String> wifiList = new ArrayList<String>();
+        ArrayList<String> wifiList = new ArrayList<>();
         for (ScanResult res:
                 scanResults) {
             String info = "Nome: " + res.SSID + "\n" +
@@ -63,7 +55,7 @@ public class WifiActivity extends AppCompatActivity {
                     "Qualità segnale: " + WifiManager.calculateSignalLevel(res.level,5);
             wifiList.add(info);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,wifiList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,wifiList);
         lv.setAdapter(adapter);
     }
 
