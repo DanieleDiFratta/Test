@@ -21,19 +21,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button wifiButton = (Button) findViewById(R.id.wifiButton);
+        wifiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                if(!wifi.isWifiEnabled()){
+                if (!wifi.isWifiEnabled()) {
                     Toast.makeText(getApplicationContext(), "wifi is disabled..making it enabled", Toast.LENGTH_LONG).show();
                     wifi.setWifiEnabled(true);
-                }
-                else{
-                    Intent intent = new Intent(MainActivity.this,WifiActivity.class);
+                } else {
+                    Intent intent = new Intent(MainActivity.this, WifiActivity.class);
                     startActivity(intent);
                 }
+            }
+        });
+        Button channelButton = (Button) findViewById(R.id.channelButton);
+        channelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ChannelSelectionActivity.class);
+                startActivity(intent);
             }
         });
     }

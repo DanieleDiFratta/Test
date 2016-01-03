@@ -8,10 +8,22 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button"
-        android:id="@+id/button"
+        android:text="@string/wifiButton"
+        android:id="@+id/wifiButton"
         android:nestedScrollingEnabled="false"
         android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/channelButton"
+        android:id="@+id/channelButton"
+        android:nestedScrollingEnabled="false"
+        android:layout_below="@+id/wifiButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
