@@ -135,7 +135,7 @@ public class WifiActivity extends AppCompatActivity {
                 wifiManager.startScan();
             }
             while (!activityVisible){
-
+                //
             }
         }
 
