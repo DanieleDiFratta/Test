@@ -49,7 +49,7 @@ public class NetworkManager {
         HashMap<WifiNetwork,Integer> result = new HashMap<>();
         for (String SSID :
                 RSSImap.keySet()) {
-            Integer integer = new Integer(auxArtMean(RSSImap.get(SSID)));
+            Integer integer = auxArtMean(RSSImap.get(SSID));
             WifiNetwork wifiNetwork = networks.get(SSID);
             result.put(wifiNetwork,integer);
         }
@@ -75,7 +75,7 @@ public class NetworkManager {
             calculateDifference(RSSImap.get(network.getSSID()));
             result.put(network,getPosition(wheMap.get(network) - artMap.get(network)));
         }
-        return null;
+        return result;
     }
 
     private void calculateDifference(List<Integer> integers) {
@@ -87,7 +87,7 @@ public class NetworkManager {
             if(previous-current<0)
                 this.positiveDifference++;
             else if(previous-current>0)
-                this.positiveDifference++;
+                this.negativeDifference++;
             else
                 this.nullDifference++;
             previous = current;
@@ -110,7 +110,7 @@ public class NetworkManager {
         HashMap<WifiNetwork,Integer> result = new HashMap<>();
         for (String SSID :
                 RSSImap.keySet()) {
-            Integer integer = new Integer(auxWeightedMean(RSSImap.get(SSID)));
+            Integer integer = auxWeightedMean(RSSImap.get(SSID));
             WifiNetwork wifiNetwork = networks.get(SSID);
             result.put(wifiNetwork,integer);
         }
