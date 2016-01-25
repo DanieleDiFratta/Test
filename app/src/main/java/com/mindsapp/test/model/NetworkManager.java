@@ -1,6 +1,11 @@
 package com.mindsapp.test.model;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
+
+import com.mindsapp.test.MainActivity;
+import com.mindsapp.test.ThresholdActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -95,14 +100,17 @@ public class NetworkManager {
     }
 
     private String getPosition(int z) {
-        if (z>=2 && this.positiveDifference>this.negativeDifference)
-            return "convergency";
+        SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
+        int approachingThres = preferences.getInt(ThresholdActivity.PREF_APPROACHING, 2);
+        int leavingThres = preferences.getInt(ThresholdActivity.PREF_LEAVING,2);
+        if (z>=approachingThres && this.positiveDifference>this.negativeDifference)
+            return "approaching";
         else
-        if(z<=2 && this.negativeDifference>this.positiveDifference)
+        if(z<=leavingThres && this.negativeDifference>this.positiveDifference)
             return "leaving";
 
-        if((Math.abs(z)<=2 && (Math.abs(this.positiveDifference-this.negativeDifference))<=this.nullDifference))
-            return "static";
+        if((Math.abs(z)<=approachingThres && (Math.abs(this.positiveDifference-this.negativeDifference))<=this.nullDifference))
+            return "chaotic motion";
         return "indeterminable";
     }
 

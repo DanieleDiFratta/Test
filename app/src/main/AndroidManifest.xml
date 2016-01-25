@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mindsapp.test" >
+    package="com.mindsapp.test">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
-        <service android:name=".WifiActivity$WifiService"></service>
+        android:theme="@style/AppTheme">
+        <service android:name=".WifiActivity$WifiService" />
+
         <activity
             android:name=".SplashScreen"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +27,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="com.mindsapp.test.MAINACTIVITY" />
 
@@ -34,10 +36,10 @@
         </activity>
         <activity
             android:name=".WifiActivity"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity android:name=".ChannelSelectionActivity" >
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".ChannelSelectionActivity" />
+        <activity android:name=".ThresholdActivity" />
+        <activity android:name=".ChartActivity"></activity>
     </application>
 
 </manifest>

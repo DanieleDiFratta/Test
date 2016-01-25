@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="channelButton">Channel Selection</string>
     <string name="wifiButton">WiFi Power</string>
+    <string name="thresholdButton">Setup Threshold</string>
+    <string name="ChartButton">Real Time Chart</string>
 </resources>
