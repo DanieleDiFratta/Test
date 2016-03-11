@@ -67,10 +67,10 @@ public class ChartActivity extends AppCompatActivity {
         chart.notifyDataSetChanged();
 
         // limit the number of visible entries
-        chart.setVisibleXRangeMaximum(120);
+        chart.setVisibleXRangeMaximum(10);
 
         // move to the latest entry
-        chart.moveViewToX(data.getXValCount() - 121);
+        chart.moveViewToX(data.getXValCount() - 11);
 
     }
 

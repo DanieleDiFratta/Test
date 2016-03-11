@@ -9,11 +9,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.mindsapp.test.ThresholdActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Places Available:"
+        android:textSize="@dimen/text_size"
+        android:id="@+id/thresholdText"/>
+
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listView3"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/thresholdText"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 </RelativeLayout>

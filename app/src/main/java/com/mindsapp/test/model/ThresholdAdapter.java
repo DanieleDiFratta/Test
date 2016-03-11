@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * Created by Daniele on 18/01/2016.
+ *
  */
 public class ThresholdAdapter extends ArrayAdapter<Threshold> {
 
@@ -27,29 +28,23 @@ public class ThresholdAdapter extends ArrayAdapter<Threshold> {
     }
 
     public View getViewOptimize(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder = null;
+        ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext()
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.rowcustom, null);
             viewHolder = new ViewHolder();
             viewHolder.place = (TextView)convertView.findViewById(R.id.textViewPlace);
-            viewHolder.approaching = (TextView)convertView.findViewById(R.id.textViewApproaching);
-            viewHolder.leaving = (TextView)convertView.findViewById(R.id.textViewLeaving);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         Threshold threshold = getItem(position);
-        viewHolder.place.setText("Place: " + threshold.getPlace());
-        viewHolder.approaching.setText("Approaching Threshold: " + String.valueOf(threshold.getApproachingThres()));
-        viewHolder.leaving.setText("Leaving Threshold: " + String.valueOf(threshold.getLeavingThres()));
+        viewHolder.place.setText(threshold.getPlace());
         return convertView;
     }
 
     private class ViewHolder {
         public TextView place;
-        public TextView approaching;
-        public TextView leaving;
     }
 }

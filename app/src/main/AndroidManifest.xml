@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mindsapp.test">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -39,7 +40,7 @@
             android:screenOrientation="portrait" />
         <activity android:name=".ChannelSelectionActivity" />
         <activity android:name=".ThresholdActivity" />
-        <activity android:name=".ChartActivity"></activity>
+        <activity android:name=".ChartActivity" />
     </application>
 
 </manifest>

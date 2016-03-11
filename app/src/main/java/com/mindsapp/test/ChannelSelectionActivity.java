@@ -1,13 +1,17 @@
 package com.mindsapp.test;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -32,6 +36,7 @@ public class ChannelSelectionActivity extends AppCompatActivity {
         lv = (ListView) findViewById(R.id.listView2);
         wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         scanner = new Scanner();
+        wifiManager.startScan();
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Test</string>
+    <string name="app_name">Wi-Fi Sensing</string>
     <string name="action_settings">Settings</string>
     <string name="channelButton">Channel Selection</string>
     <string name="wifiButton">WiFi Power</string>
