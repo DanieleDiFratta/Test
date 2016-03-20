@@ -35,6 +35,7 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart);
         chart = (LineChart) findViewById(R.id.lineChart);
+        chart.setScrollY(10);
         LineData data = new LineData();
         chart.setData(data);
         manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -72,6 +73,7 @@ public class ChartActivity extends AppCompatActivity {
         // move to the latest entry
         chart.moveViewToX(data.getXValCount() - 11);
 
+        chart.moveViewToY(data.getYMin(), YAxis.AxisDependency.RIGHT);
     }
 
     private ILineDataSet createSet(String SSID) {

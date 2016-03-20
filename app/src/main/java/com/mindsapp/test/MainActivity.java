@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         chartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ChartActivity.class);
+                Intent intent = new Intent(MainActivity.this, ChartsActivity.class);
                 startActivity(intent);
             }
         });
