@@ -41,10 +41,7 @@
         <activity android:name=".ChannelSelectionActivity" />
         <activity android:name=".ThresholdActivity" />
         <activity android:name=".ChartActivity" />
-        <activity
-            android:name=".ChartsActivity"
-            android:label="@string/title_activity_charts"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ChartsActivity"/>
     </application>
 
 </manifest>

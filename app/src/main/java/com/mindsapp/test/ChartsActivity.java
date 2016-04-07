@@ -23,16 +23,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.mindsapp.test.model.Channel;
 import com.mindsapp.test.model.ChannelManager;
+import com.mindsapp.test.model.WifiNetwork;
+import com.mindsapp.test.utility.ChartColor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -63,8 +72,6 @@ public class ChartsActivity extends AppCompatActivity {
         fragments = new ArrayList<>();
         fragments.add(PowerFragment.class.getName());
         fragments.add(ChannelFragment.class.getName());
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -115,8 +122,7 @@ public class ChartsActivity extends AppCompatActivity {
             powerChart = (LineChart) powerView.findViewById(R.id.powerChart);
             powerChart.setTouchEnabled(false);
             powerChart.getAxisRight().setEnabled(false);
-            powerChart.setScaleY(0.85f);
-            powerChart.setScaleX(0.85f);
+            powerChart.getLegend().setWordWrapEnabled(true);
             YAxis yLeft = powerChart.getAxisLeft();
             yLeft.setStartAtZero(false);
             yLeft.setAxisMaxValue(-20);
@@ -173,10 +179,9 @@ public class ChartsActivity extends AppCompatActivity {
         }
 
         private ILineDataSet createSet(String SSID) {
-            Random rand = new Random();
             LineDataSet set = new LineDataSet(null, SSID);
             set.setAxisDependency(YAxis.AxisDependency.LEFT);
-            set.setColor(Color.rgb(rand.nextInt(), rand.nextInt(), rand.nextInt()));
+            set.setColor(ChartColor.LINE_CHART_COLORS[powerChart.getLineData().getDataSetCount()]);
             set.setCircleColor(Color.BLACK);
             set.setLineWidth(2f);
             set.setCircleRadius(4f);
@@ -192,7 +197,7 @@ public class ChartsActivity extends AppCompatActivity {
 
     public static class ChannelFragment extends Fragment {
 
-        private LineChart channelChart;
+        private BarChart channelChart;
         private WifiManager wifiManager;
         private BroadcastReceiver br;
         private ChannelManager channelManager;
@@ -202,18 +207,51 @@ public class ChartsActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View channelView = inflater.inflate(R.layout.fragment_channel_chart,container,false);
+            View channelView = inflater.inflate(R.layout.fragment_channel_chart, container, false);
             wifiManager = (WifiManager) getActivity().getSystemService(Context.WIFI_SERVICE);
-            channelChart = (LineChart) channelView.findViewById(R.id.channelChart);
+            channelChart = (BarChart) channelView.findViewById(R.id.channelChart);
+            BarData data = new BarData();
+            channelChart.setData(data);
             channelManager = new ChannelManager();
             br = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    channelManager.selectChannel(wifiManager.getScanResults());
+                    updateResults(channelManager.selectChannel(wifiManager.getScanResults()));
                 }
             };
             wifiManager.startScan();
             return channelView;
+        }
+
+        private void updateResults(Collection<Channel> channels) {
+            BarData data = channelChart.getData();
+            data.clearValues();
+            for (Channel ch :
+                    channels) {
+                for (WifiNetwork network :
+                        ch.getNetworks()) {
+                    IBarDataSet set = data.getDataSetByLabel(network.getSSID(), true);
+                    if(set==null) {
+                        List<BarEntry> barEntries = new ArrayList<BarEntry>();
+                        barEntries.add(new BarEntry(network.getRSSI(),ch.getId()));
+                        set = new BarDataSet(barEntries,network.getSSID());
+                        data.addDataSet(set);
+                    }
+                }
+            }
+            channelChart.invalidate();
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            getActivity().registerReceiver(br, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            getActivity().unregisterReceiver(br);
         }
     }
 
