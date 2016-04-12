@@ -230,15 +230,18 @@ public class ChartsActivity extends AppCompatActivity {
                     channels) {
                 for (WifiNetwork network :
                         ch.getNetworks()) {
-                    IBarDataSet set = data.getDataSetByLabel(network.getSSID(), true);
-                    if(set==null) {
-                        List<BarEntry> barEntries = new ArrayList<BarEntry>();
-                        barEntries.add(new BarEntry(network.getRSSI(),ch.getId()));
-                        set = new BarDataSet(barEntries,network.getSSID());
-                        data.addDataSet(set);
+                    if(network!=null) {
+                        IBarDataSet set = data.getDataSetByLabel(network.getSSID(), true);
+                        if (set == null) {
+                            List<BarEntry> barEntries = new ArrayList<>();
+                            barEntries.add(new BarEntry(network.getRSSI(), ch.getId()));
+                            set = new BarDataSet(barEntries, network.getSSID());
+                            data.addDataSet(set);
+                        }
                     }
                 }
             }
+            channelChart.notifyDataSetChanged();
             channelChart.invalidate();
         }
 
