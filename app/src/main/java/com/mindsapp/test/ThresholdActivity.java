@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.mindsapp.test.model.NetworkManager;
 import com.mindsapp.test.model.Threshold;
 import com.mindsapp.test.model.ThresholdAdapter;
 import com.mindsapp.test.model.ThresholdManager;
@@ -27,6 +28,7 @@ public class ThresholdActivity extends AppCompatActivity {
     public static final String PREF_PLACE = "prefPlace";
     public static final String PREF_APPROACHING = "prefApproaching";
     public static final String PREF_LEAVING = "prefLeaving";
+    public static String CurrentPlace;
     private ListView lv;
 
     @Override
@@ -45,6 +47,9 @@ public class ThresholdActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Threshold threshold = (Threshold) parent.getItemAtPosition(position);
+                if(CurrentPlace != threshold.getPlace())
+                    NetworkManager.resetStoredValues();
+                CurrentPlace = threshold.getPlace();
                 SharedPreferences preferences = getSharedPreferences(THRES_PREF, Activity.MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString(PREF_PLACE,threshold.getPlace());

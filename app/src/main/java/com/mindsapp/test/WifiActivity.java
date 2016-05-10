@@ -1,16 +1,20 @@
 package com.mindsapp.test;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
@@ -100,9 +104,13 @@ public class WifiActivity extends AppCompatActivity {
         WifiService.activityVisible = false;
     }
 
+    public void resetStoredValues(View view) {
+        NetworkManager.resetStoredValues();
+    }
+
     public static class WifiService extends IntentService {
 
-        public static final int TOTAL_SCAN_NUM = 100;
+        public static final int TOTAL_SCAN_NUM = 50;
         private NetworkManager networkManager;
         private int scanNum;
         private BroadcastReceiver receiver;
@@ -144,6 +152,8 @@ public class WifiActivity extends AppCompatActivity {
             super.onDestroy();
             unregisterReceiver(receiver);
             HashMap<WifiNetwork,String> ResultMap = this.networkManager.getResults();
+            networkManager.updateRSSIMap();
+            networkManager.saveRSSI();
             Intent intent = new Intent();
             intent.setAction("com.mindsapp.test.action.SCAN_FINISHED_ACTION");
             intent.putExtra("map", ResultMap);

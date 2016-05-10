@@ -18,6 +18,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -26,7 +27,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mindsapp.test.model.NetworkManager;
 import com.mindsapp.test.model.Threshold;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        applicationContext = getApplicationContext();
+
         //pemissions
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},20);
@@ -50,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
         //end permission+
-        applicationContext = getApplicationContext();
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         final LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if(!wifi.isWifiEnabled()) {

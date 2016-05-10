@@ -163,7 +163,7 @@ public class ChartsActivity extends AppCompatActivity {
                     set = createSet(result.SSID);
                     data.addDataSet(set);
                 }
-                data.addEntry(new Entry(result.level, set.getEntryCount()), data.getIndexOfDataSet(set));
+                data.addEntry(new Entry(result.level, data.getXValCount()), data.getIndexOfDataSet(set));
             }
 
             data.addXValue("");
@@ -181,7 +181,7 @@ public class ChartsActivity extends AppCompatActivity {
         private ILineDataSet createSet(String SSID) {
             LineDataSet set = new LineDataSet(null, SSID);
             set.setAxisDependency(YAxis.AxisDependency.LEFT);
-            set.setColor(ChartColor.LINE_CHART_COLORS[powerChart.getLineData().getDataSetCount()]);
+            set.setColor(ChartColor.LINE_CHART_COLORS[powerChart.getLineData().getDataSetCount()%5]);
             set.setCircleColor(Color.BLACK);
             set.setLineWidth(2f);
             set.setCircleRadius(4f);
@@ -224,25 +224,38 @@ public class ChartsActivity extends AppCompatActivity {
         }
 
         private void updateResults(Collection<Channel> channels) {
-            BarData data = channelChart.getData();
-            data.clearValues();
-            for (Channel ch :
-                    channels) {
-                for (WifiNetwork network :
+            ArrayList<String> xVals = new ArrayList<String>();
+            for (int i = 1; i < 13; i++) {
+                xVals.add(String.valueOf(i));
+            }
+
+
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+
+            for (Channel ch:
+                 channels) {
+                for (WifiNetwork ntw :
                         ch.getNetworks()) {
-                    if(network!=null) {
-                        IBarDataSet set = data.getDataSetByLabel(network.getSSID(), true);
-                        if (set == null) {
-                            List<BarEntry> barEntries = new ArrayList<>();
-                            barEntries.add(new BarEntry(network.getRSSI(), ch.getId()));
-                            set = new BarDataSet(barEntries, network.getSSID());
-                            data.addDataSet(set);
-                        }
+                    if (ntw != null) {
+                        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+                        yVals1.add(new BarEntry(ntw.getRSSI(), ch.getId()-1));
+                        BarDataSet set = new BarDataSet(yVals1, ntw.getSSID());
+                        dataSets.add(set);
+                        set.setBarSpacePercent(35f);
+                        set.setColor(ChartColor.LINE_CHART_COLORS[dataSets.indexOf(set)%5]);
                     }
                 }
             }
-            channelChart.notifyDataSetChanged();
-            channelChart.invalidate();
+
+
+
+
+
+            BarData data = new BarData(xVals, dataSets);
+            data.setValueTextSize(10f);
+
+            channelChart.setData(data);
         }
 
         @Override

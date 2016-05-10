@@ -7,4 +7,8 @@
     <string name="ChartButton">Real Time Chart</string>
     <string name="title_activity_charts">ChartsActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="xAxisText">POWER [dBm]</string>
+    <string name="power_chart_name_text">POWER CHART</string>
+    <string name="ch_chart_name_text">CHANNEL CHART</string>
+    <string name="ResetButton">RESET VALUES</string>
 </resources>

@@ -1,15 +1,20 @@
 package com.mindsapp.test.model;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 
 import com.mindsapp.test.MainActivity;
 import com.mindsapp.test.ThresholdActivity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +22,9 @@ import java.util.Map;
  * Created by Daniele on 10/12/2015.
  */
 public class NetworkManager {
+    public static final String NETWORK_PREF = "network prefereces";
+    public static final String RSSI_MAP = "RSSI map";
+    private static final int NUM_STORED_VALUES = 50;
     private Map<String,WifiNetwork> networks;
     private Map<String,List<Integer>> RSSImap;
     private int negativeDifference;
@@ -25,12 +33,44 @@ public class NetworkManager {
 
     public NetworkManager() {
         this.networks = new HashMap<>();
-        this.RSSImap = new HashMap<>();
+        this.RSSImap = loadMap();
+        if(RSSImap==null)
+            RSSImap = new HashMap<>();
         this.negativeDifference = 0;
         this.positiveDifference = 0;
         this.nullDifference = 0;
     }
 
+    public static Map<String, List<Integer>> loadMap() {
+        Map<String,List<Integer>> outputMap = new HashMap<>();
+        SharedPreferences pSharedPref = MainActivity.getContextofApplication().getSharedPreferences(NETWORK_PREF, Activity.MODE_PRIVATE);
+        try{
+            if (pSharedPref != null){
+                String jsonString = pSharedPref.getString(RSSI_MAP, (new JSONObject()).toString());
+                JSONObject jsonObject = new JSONObject(jsonString);
+                Iterator<String> keysItr = jsonObject.keys();
+                while(keysItr.hasNext()) {
+                    String key = keysItr.next();
+                    JSONArray jlist = jsonObject.getJSONArray(key);
+                    List<Integer> list = new ArrayList<>();
+                    for(int i=0; i < jlist.length(); i++){
+                        list.add(jlist.getInt(i));
+                    }
+                    outputMap.put(key, list);;
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return outputMap;
+    }
+
+    public static void resetStoredValues() {
+        SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(NetworkManager.NETWORK_PREF, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove(NetworkManager.RSSI_MAP);
+        editor.commit();
+    }
 
     public void elaborateResult(List<ScanResult> scanResults) {
         for (ScanResult result :
@@ -135,5 +175,24 @@ public class NetworkManager {
             i++;
         }
         return sumRssi/sumI;
+    }
+
+    public void saveRSSI() {
+        SharedPreferences pref = MainActivity.getContextofApplication().getSharedPreferences(NETWORK_PREF,Activity.MODE_PRIVATE);
+        JSONObject jsonObject = new JSONObject(this.RSSImap);
+        String jsonString = jsonObject.toString();
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(RSSI_MAP, jsonString);
+        editor.commit();
+    }
+
+    public void updateRSSIMap() {
+        for (String SSID:
+             RSSImap.keySet()) {
+            List<Integer> RSSIvalues = RSSImap.get(SSID);
+            if(RSSIvalues.size()>NUM_STORED_VALUES)
+                RSSIvalues.subList(RSSIvalues.size()-NUM_STORED_VALUES,RSSIvalues.size());
+            RSSImap.put(SSID,RSSIvalues);
+        }
     }
 }

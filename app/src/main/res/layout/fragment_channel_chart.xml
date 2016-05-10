@@ -8,7 +8,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".ChartsActivity$PowerFragment">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/chChartNameText"
+        android:text="@string/ch_chart_name_text"/>
+
+    <com.mindsapp.test.utility.VerticalTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:id="@+id/chChartText"
+        android:layout_centerVertical="true"
+        android:text="@string/xAxisText" />
+
     <com.github.mikephil.charting.charts.BarChart
+        android:layout_toRightOf="@id/chChartText"
+        android:layout_below="@id/chChartNameText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/channelChart"/>
