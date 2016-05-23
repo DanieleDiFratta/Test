@@ -15,7 +15,7 @@ public class WifiService extends IntentService {
     private NetworkManager networkManager;
 
     public WifiService() {
-        super("WifiService");
+        super("RSSIService");
         this.networkManager = new NetworkManager();
     }
 

@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name=".WifiActivity$WifiService" />
+        <service android:name=".RSSICollectorActivity$RSSIService"></service>
 
         <activity
             android:name=".SplashScreen"
@@ -41,7 +42,8 @@
         <activity android:name=".ChannelSelectionActivity" />
         <activity android:name=".ThresholdActivity" />
         <activity android:name=".ChartActivity" />
-        <activity android:name=".ChartsActivity"/>
+        <activity android:name=".ChartsActivity" />
+        <activity android:name=".RSSICollectorActivity"></activity>
     </application>
 
 </manifest>
