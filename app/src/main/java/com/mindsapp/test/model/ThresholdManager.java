@@ -1,6 +1,11 @@
 package com.mindsapp.test.model;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Environment;
+
+import com.mindsapp.test.MainActivity;
+import com.mindsapp.test.ThresholdActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by Daniele on 17/01/2016.
+ * Manages all operations to calculate Threshold.
  */
 public class ThresholdManager {
 
@@ -31,6 +37,18 @@ public class ThresholdManager {
             thresholdList.add(temp);
         }
         reader.close();
+    }
+
+    public void setThreshold(Threshold threshold){
+        if(!ThresholdActivity.CurrentPlace.equals(threshold.getPlace()))
+            NetworkManager.resetStoredValues();
+        ThresholdActivity.CurrentPlace = threshold.getPlace();
+        SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(ThresholdActivity.PREF_PLACE,threshold.getPlace());
+        editor.putInt(ThresholdActivity.PREF_APPROACHING, threshold.getApproachingThres());
+        editor.putInt(ThresholdActivity.PREF_LEAVING, threshold.getLeavingThres());
+        editor.apply();
     }
 
     public List<Threshold> getThresholdList() {

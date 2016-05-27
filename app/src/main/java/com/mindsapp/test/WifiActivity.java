@@ -20,7 +20,6 @@ import android.widget.ProgressBar;
 
 import com.mindsapp.test.model.NetworkManager;
 import com.mindsapp.test.model.WifiNetwork;
-import com.mindsapp.test.model.WifiService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -102,10 +101,6 @@ public class WifiActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(scanReciever);
         WifiService.activityVisible = false;
-    }
-
-    public void resetStoredValues(View view) {
-        NetworkManager.resetStoredValues();
     }
 
     public static class WifiService extends IntentService {

@@ -46,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         applicationContext = getApplicationContext();
 
+        Log.i(getApplicationInfo().name,getSharedPreferences(NetworkManager.NETWORK_PREF,Activity.MODE_PRIVATE)
+                .getString(NetworkManager.RSSI_MAP,"non ci sono salvate"));
+
         //pemissions
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},20);
@@ -132,6 +135,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ChartsActivity.class);
+                startActivity(intent);
+            }
+        });
+        Button rssiButton = (Button) findViewById(R.id.rssibutton);
+        rssiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, RSSICollectorActivity.class);
                 startActivity(intent);
             }
         });

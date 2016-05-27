@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
+import android.util.Log;
 
 import com.mindsapp.test.MainActivity;
 import com.mindsapp.test.ThresholdActivity;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 /**
  * Created by Daniele on 10/12/2015.
+ * Manages all the operation for the calculating where the network is.
  */
 public class NetworkManager {
     public static final String NETWORK_PREF = "network prefereces";
@@ -56,7 +58,7 @@ public class NetworkManager {
                     for(int i=0; i < jlist.length(); i++){
                         list.add(jlist.getInt(i));
                     }
-                    outputMap.put(key, list);;
+                    outputMap.put(key, list);
                 }
             }
         }catch(Exception e){
@@ -140,9 +142,13 @@ public class NetworkManager {
     }
 
     private String getPosition(int z) {
+        Log.i("z = ", String.valueOf(z));
         SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
         int approachingThres = preferences.getInt(ThresholdActivity.PREF_APPROACHING, 2);
         int leavingThres = preferences.getInt(ThresholdActivity.PREF_LEAVING,2);
+
+        if((Math.abs(z)<=approachingThres && (Math.abs(this.positiveDifference-this.negativeDifference))<=this.nullDifference))
+            return "chaotic motion";
         if (z>=approachingThres && this.positiveDifference>this.negativeDifference)
             return "approaching";
         else

@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by danal on 18/05/2016.
+ * Created by Daniele on 18/05/2016.
+ *
+ * Manages all the oparation for collecting RSSI data
  */
 public class RSSIManager {
 
@@ -48,7 +50,7 @@ public class RSSIManager {
                 for(int i=0; i < jlist.length(); i++){
                     list.add(jlist.getInt(i));
                 }
-                outputMap.put(key, list);;
+                outputMap.put(key, list);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,8 +87,14 @@ public class RSSIManager {
         }
     }
 
-    public void calculateThres() {
+    public double calculateThres() {
         ThresholdCalculator thresholdCalculator = new ThresholdCalculator();
-        thresholdCalculator.calculateThres(RSSIvalues);
+        double threshold = 0;
+        try {
+            threshold = thresholdCalculator.calculateThres(RSSIvalues);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return threshold;
     }
 }
