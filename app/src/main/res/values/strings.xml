@@ -12,4 +12,5 @@
     <string name="ch_chart_name_text">CHANNEL CHART</string>
     <string name="ResetButton">RESET VALUES</string>
     <string name="rssiButton">Setup Threshold</string>
+    <string name="search_hint">Search Network</string>
 </resources>

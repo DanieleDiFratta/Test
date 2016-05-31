@@ -34,13 +34,32 @@ public class NetworkManager {
     private int nullDifference;
 
     public NetworkManager() {
-        this.networks = new HashMap<>();
+        this.networks = loadNetworks();
         this.RSSImap = loadMap();
         if(RSSImap==null)
             RSSImap = new HashMap<>();
         this.negativeDifference = 0;
         this.positiveDifference = 0;
         this.nullDifference = 0;
+    }
+
+    private Map<String, WifiNetwork> loadNetworks() {
+        Map<String,WifiNetwork> outputMap = new HashMap<>();
+        SharedPreferences pSharedPref = MainActivity.getContextofApplication().getSharedPreferences(NETWORK_PREF, Activity.MODE_PRIVATE);
+        try{
+            if (pSharedPref != null){
+                String jsonString = pSharedPref.getString(RSSI_MAP, (new JSONObject()).toString());
+                JSONObject jsonObject = new JSONObject(jsonString);
+                Iterator<String> keysItr = jsonObject.keys();
+                while(keysItr.hasNext()) {
+                    String key = keysItr.next();
+                    outputMap.put(key, new WifiNetwork(key));
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return outputMap;
     }
 
     public static Map<String, List<Integer>> loadMap() {
@@ -155,8 +174,6 @@ public class NetworkManager {
         if(z<=leavingThres && this.negativeDifference>this.positiveDifference)
             return "leaving";
 
-        if((Math.abs(z)<=approachingThres && (Math.abs(this.positiveDifference-this.negativeDifference))<=this.nullDifference))
-            return "chaotic motion";
         return "indeterminable";
     }
 

@@ -23,6 +23,10 @@ public class WifiNetwork implements Serializable{
         this(result.frequency, result.level, result.SSID);
     }
 
+    public WifiNetwork(String SSID) {
+        this.SSID = SSID;
+    }
+
     public int getFrequency() {
         return frequency;
     }
