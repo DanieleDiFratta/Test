@@ -1,56 +1,53 @@
 package com.mindsapp.test;
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.mindsapp.test.model.NetworkManager;
+import com.mindsapp.test.model.TestManager;
 import com.mindsapp.test.model.WifiNetwork;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class WifiActivity extends AppCompatActivity {
+public class TestActivity extends AppCompatActivity {
 
-    BroadcastReceiver broadcastReceiver;
-    BroadcastReceiver scanReciever;
-    ProgressDialog progressDialog;
-    ListView lv;
+    private ProgressDialog progressDialog;
+    private ListView lv;
+    private BroadcastReceiver broadcastReceiver;
+    private BroadcastReceiver scanReciever;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wifi);
+        setContentView(R.layout.activity_test);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMax(WifiService.TOTAL_SCAN_NUM);
+        progressDialog.setMax(TestService.TOTAL_SCAN_NUM);
         progressDialog.setProgress(0);
         progressDialog.setMessage("Scanning...\nYou can leave the app in background");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.show();
-        lv = (ListView) findViewById(R.id.listView);
-        startService(new Intent(this, WifiService.class));
+        lv = (ListView) findViewById(R.id.test_list_view);
+        startService(new Intent(this, TestService.class));
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                HashMap<WifiNetwork,String> resultMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("map");
+                HashMap<WifiNetwork,String> oldTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("oldTestMap");
+                HashMap<WifiNetwork,String> newTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("newTestMap");
+                HashMap<WifiNetwork,String> invertedTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("invertedTestMap");
                 progressDialog.dismiss();
-                showResult(resultMap);
+                showResult(oldTestMap,newTestMap,invertedTestMap);
             }
         };
         scanReciever = new BroadcastReceiver() {
@@ -64,16 +61,17 @@ public class WifiActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(broadcastReceiver, new IntentFilter("com.mindsapp.test.action.SCAN_FINISHED_ACTION"));
-        registerReceiver(scanReciever,new IntentFilter("com.mindsapp.test.action.NEW_SCAN_ACTION"));
-        WifiService.activityVisible = true;
+        registerReceiver(broadcastReceiver, new IntentFilter("com.mindsapp.test.action.SCAN_FINISHED_TEST_ACTION"));
+        registerReceiver(scanReciever,new IntentFilter("com.mindsapp.test.action.NEW_SCAN_TEST_ACTION"));
+        TestService.activityVisible = true;
     }
 
-    public void showResult(HashMap<WifiNetwork, String> resultMap){
+    public void showResult(HashMap<WifiNetwork, String> oldTestMap, HashMap<WifiNetwork, String> newTestMap, HashMap<WifiNetwork, String> invertedTestMap){
         ArrayList<String> wifiList = new ArrayList<>();
         for (WifiNetwork network :
-                resultMap.keySet()) {
-            String info = network.getSSID() + ": " + resultMap.get(network);
+                oldTestMap.keySet()) {
+            String info = network.getSSID() + " (old: " + oldTestMap.get(network) + ", new: " + newTestMap.get(network)
+                    + ", inv: " + invertedTestMap.get(network) + ")";
             wifiList.add(info);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,wifiList);
@@ -100,20 +98,21 @@ public class WifiActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(scanReciever);
-        WifiService.activityVisible = false;
+        TestService.activityVisible = false;
     }
 
-    public static class WifiService extends IntentService {
+
+    public static class TestService extends IntentService{
 
         public static final int TOTAL_SCAN_NUM = 50;
-        private NetworkManager networkManager;
+        private TestManager testManager;
         private int scanNum;
         private BroadcastReceiver receiver;
         public static boolean activityVisible;
 
-        public WifiService() {
-            super("WifiService");
-            this.networkManager = new NetworkManager();
+        public TestService() {
+            super("TestService");
+            this.testManager = new TestManager();
             scanNum = 0;
             activityVisible = true;
         }
@@ -126,9 +125,9 @@ public class WifiActivity extends AppCompatActivity {
                 public void onReceive(Context context, Intent intent) {
                     scanNum++;
                     Log.i("Scan num", "" + scanNum);
-                    networkManager.elaborateResult(wifiManager.getScanResults());
+                    testManager.elaborateResult(wifiManager.getScanResults());
                     Intent myintent = new Intent();
-                    myintent.setAction("com.mindsapp.test.action.NEW_SCAN_ACTION");
+                    myintent.setAction("com.mindsapp.test.action.NEW_SCAN_TEST_ACTION");
                     myintent.putExtra("scanNum", scanNum);
                     sendBroadcast(myintent);
                     wifiManager.startScan();
@@ -148,14 +147,23 @@ public class WifiActivity extends AppCompatActivity {
         public void onDestroy() {
             super.onDestroy();
             unregisterReceiver(receiver);
-            HashMap<WifiNetwork,String> ResultMap = this.networkManager.getResults();
-            networkManager.updateRSSIMap();
-            networkManager.saveRSSI();
+            HashMap<WifiNetwork,String> oldTestMap = this.testManager.getOldResults();
+            HashMap<WifiNetwork,String> newTestMap = null;
+            HashMap<WifiNetwork,String> invertedTestMap = null;
+            try {
+                newTestMap = this.testManager.getNewResults();
+                invertedTestMap = this.testManager.getInvertedResults();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            testManager.updateRSSIMap();
+            testManager.saveRSSI();
             Intent intent = new Intent();
-            intent.setAction("com.mindsapp.test.action.SCAN_FINISHED_ACTION");
-            intent.putExtra("map", ResultMap);
+            intent.setAction("com.mindsapp.test.action.SCAN_FINISHED_TEST_ACTION");
+            intent.putExtra("oldTestMap", oldTestMap);
+            intent.putExtra("newTestMap",newTestMap);
+            intent.putExtra("invertedTestMap",invertedTestMap);
             sendBroadcast(intent);
         }
     }
-
 }

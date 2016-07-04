@@ -79,7 +79,7 @@ public class RSSIManager {
         String jsonString = jsonObject.toString();
         File file = new File(MainActivity.getContextofApplication().getFilesDir(), FILE_PATH);
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            FileOutputStream fileOutputStream = new FileOutputStream(file,true);
             fileOutputStream.write(jsonString.getBytes());
             fileOutputStream.close();
         } catch (java.io.IOException e) {
@@ -96,5 +96,10 @@ public class RSSIManager {
             e.printStackTrace();
         }
         return threshold;
+    }
+
+    public static boolean resetStoredValues() {
+        File file = new File(MainActivity.getContextofApplication().getFilesDir(), FILE_PATH);
+        return file.delete();
     }
 }

@@ -147,6 +147,7 @@ public class NetworkManager {
     private void calculateDifference(List<Integer> integers) {
         this.negativeDifference = 0;
         this.positiveDifference = 0;
+        this.nullDifference = 0;
         int previous = 0;
         for (int current:
              integers) {
@@ -217,5 +218,14 @@ public class NetworkManager {
                 RSSIvalues.subList(RSSIvalues.size()-NUM_STORED_VALUES,RSSIvalues.size());
             RSSImap.put(SSID,RSSIvalues);
         }
+    }
+
+
+    public Map<String, WifiNetwork> getNetworks() {
+        return networks;
+    }
+
+    public Map<String, List<Integer>> getRSSImap() {
+        return RSSImap;
     }
 }

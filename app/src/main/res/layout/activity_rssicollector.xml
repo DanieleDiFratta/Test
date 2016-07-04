@@ -18,6 +18,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/calculateThresButton"
-        android:onClick="calculateThres"/>
+        android:text="@string/new_threshold"
+        android:layout_below="@id/NumberOfTestText"
+        android:onClick="calculateThres"
+        android:layout_alignRight="@+id/scanButton"
+        android:layout_alignEnd="@+id/scanButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_new_scan"
+        android:id="@+id/scanButton"
+        android:onClick="startNewScan"
+        android:layout_below="@+id/calculateThresButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

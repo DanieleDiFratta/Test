@@ -40,8 +40,9 @@ public class ThresholdManager {
     }
 
     public void setThreshold(Threshold threshold){
-        if(!ThresholdActivity.CurrentPlace.equals(threshold.getPlace()))
-            NetworkManager.resetStoredValues();
+        if(ThresholdActivity.CurrentPlace!=null)
+            if(!ThresholdActivity.CurrentPlace.equals(threshold.getPlace()))
+                NetworkManager.resetStoredValues();
         ThresholdActivity.CurrentPlace = threshold.getPlace();
         SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
