@@ -38,4 +38,40 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Approaching Thres"
+        android:id="@+id/approachingButton"
+        android:onClick="saveApproachingThres"
+        android:layout_below="@+id/scanButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save Leaving Thres"
+        android:id="@+id/leavingButton"
+        android:onClick="saveLeavingThres"
+        android:layout_below="@+id/approachingButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset Stored Values"
+        android:id="@+id/resetValuesButton"
+        android:onClick="resetStoredValues"
+        android:layout_below="@+id/leavingButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>

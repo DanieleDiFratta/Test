@@ -25,6 +25,7 @@ public class ThresholdActivity extends AppCompatActivity {
     public static final String PREF_PLACE = "prefPlace";
     public static final String PREF_APPROACHING = "prefApproaching";
     public static final String PREF_LEAVING = "prefLeaving";
+    public static final String PREF_CHAOTIC = "precChaotic";
     public static String CurrentPlace;
     private ListView lv;
 

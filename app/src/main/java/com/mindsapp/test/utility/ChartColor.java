@@ -7,6 +7,6 @@ import android.graphics.Color;
  */
 public class ChartColor {
     public static final int[] LINE_CHART_COLORS = {
-        Color.BLUE , Color.RED , Color.GREEN , Color.YELLOW , Color.BLACK
+        Color.BLUE , Color.RED , Color.GREEN , Color.YELLOW , Color.BLACK , Color.CYAN
     };
 }

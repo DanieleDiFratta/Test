@@ -59,17 +59,6 @@ public class ChannelSelectionActivity extends AppCompatActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
-    //    private void showResult(Channel bestChannel) {
-//        ArrayList<String> channelList = new ArrayList<>();
-//        String info = "Id: " + bestChannel.getId() + "\n" +
-//                "Frequency: " + bestChannel.getFrequency() + "\n" +
-//                "Overlapping: " + bestChannel.getOverlapping() + "\n" +
-//                "Networks List: " + bestChannel.getNetworks();
-//        channelList.add(info);
-//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,channelList);
-//        lv.setAdapter(adapter);
-//    }
-
     private void showResult(Collection<Channel> bestChannel) {
         ArrayList<String> channelList = new ArrayList<>();
         for (Channel channel:

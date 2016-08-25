@@ -49,8 +49,9 @@ public class WifiActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 HashMap<WifiNetwork,String> resultMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("map");
+                HashMap<WifiNetwork,Integer> networkToRSSI = (HashMap<WifiNetwork, Integer>) intent.getSerializableExtra("numRSSI");
                 progressDialog.dismiss();
-                showResult(resultMap);
+                showResult(resultMap,networkToRSSI);
             }
         };
         scanReciever = new BroadcastReceiver() {
@@ -69,11 +70,11 @@ public class WifiActivity extends AppCompatActivity {
         WifiService.activityVisible = true;
     }
 
-    public void showResult(HashMap<WifiNetwork, String> resultMap){
+    public void showResult(HashMap<WifiNetwork, String> resultMap, HashMap<WifiNetwork, Integer> networkToRSSI){
         ArrayList<String> wifiList = new ArrayList<>();
         for (WifiNetwork network :
                 resultMap.keySet()) {
-            String info = network.getSSID() + ": " + resultMap.get(network);
+            String info = network.getSSID() + ": " + resultMap.get(network) + "(numRSSI: " + networkToRSSI.get(network) +")";
             wifiList.add(info);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,wifiList);
@@ -149,11 +150,13 @@ public class WifiActivity extends AppCompatActivity {
             super.onDestroy();
             unregisterReceiver(receiver);
             HashMap<WifiNetwork,String> ResultMap = this.networkManager.getResults();
-            networkManager.updateRSSIMap();
-            networkManager.saveRSSI();
+            HashMap<WifiNetwork,Integer> networkToNumRSSI = this.networkManager.getNumRSSI();
+            //networkManager.updateRSSIMap();
+            //networkManager.saveRSSI();
             Intent intent = new Intent();
             intent.setAction("com.mindsapp.test.action.SCAN_FINISHED_ACTION");
             intent.putExtra("map", ResultMap);
+            intent.putExtra("numRSSI",networkToNumRSSI);
             sendBroadcast(intent);
         }
     }

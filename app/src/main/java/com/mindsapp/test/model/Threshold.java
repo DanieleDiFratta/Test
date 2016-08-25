@@ -13,11 +13,13 @@ import java.io.FileReader;
 public class Threshold {
 
     String place;
-    int approachingThres;
-    int leavingThres;
+    double chaoticThres;
+    double approachingThres;
+    double leavingThres;
 
-    public Threshold(String place, int approachingThres, int leavingThres) {
+    public Threshold(String place, double chaoticThres, double approachingThres, double leavingThres) {
         this.place = place;
+        this.chaoticThres = chaoticThres;
         this.approachingThres = approachingThres;
         this.leavingThres = leavingThres;
     }
@@ -26,11 +28,15 @@ public class Threshold {
         return place;
     }
 
-    public int getApproachingThres() {
+    public double getApproachingThres() {
         return approachingThres;
     }
 
-    public int getLeavingThres() {
+    public double getLeavingThres() {
         return leavingThres;
+    }
+
+    public double getChaoticThres() {
+        return chaoticThres;
     }
 }

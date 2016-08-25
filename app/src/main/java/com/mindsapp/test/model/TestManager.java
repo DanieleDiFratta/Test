@@ -3,11 +3,15 @@ package com.mindsapp.test.model;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
-import android.util.Log;
+import android.os.Environment;
 
 import com.mindsapp.test.MainActivity;
 import com.mindsapp.test.ThresholdActivity;
 
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -48,34 +52,71 @@ public class TestManager {
 
     public HashMap<WifiNetwork, String> getNewResults() throws Exception {
         HashMap<WifiNetwork,String> newTestMap = new HashMap<>();
-        Map<String,List<Integer>> rssiMap = networkManager.getRSSImap();
-        Map<String,WifiNetwork> networkMap = networkManager.getNetworks();
-        for (String ssid :
-                networkMap.keySet()) {
-            calculateDifference(rssiMap.get(ssid));
-            int mean = calculateMean(rssiMap.get(ssid));
-            double variance = calculateVariance(rssiMap.get(ssid),mean);
-            double z = (variance/Math.pow(mean,2))*invErf(1.0 - 2.0*PFA);
+        Map<String,List<Integer>> BSSIDtoRSSI = networkManager.getBSSIDtoRSSI();
+        Map<String,WifiNetwork> BSSIDtoWifiNetwork = networkManager.getBSSIDtoWifiNetwork();
+        for (String BSSID :
+                BSSIDtoWifiNetwork.keySet()) {
+            calculateDifference(BSSIDtoRSSI.get(BSSID));
+            double mean = calculateMean(BSSIDtoRSSI.get(BSSID));
+            double variance = calculateVariance(BSSIDtoRSSI.get(BSSID),mean);
+            double z = (variance/Math.pow(mean,2));
             String position = getPosition(z);
-            newTestMap.put(networkMap.get(ssid),position);
+            newTestMap.put(BSSIDtoWifiNetwork.get(BSSID),position);
         }
+        savePositions(newTestMap);
+        saveRssiValues();
         return newTestMap;
     }
 
+    private void saveRssiValues() {
+        FileWriter writer;
+        String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String file = sdcard + File.separator + "RSSI Values.txt";
+        try {
+            writer = new FileWriter(file, true);
+            writer.write(networkManager.getBSSIDtoRSSI().toString());
+            writer.flush();
+            writer.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void savePositions(HashMap<WifiNetwork, String> newTestMap) {
+        HashMap<String,String> positions = new HashMap<>();
+        for (WifiNetwork network :
+                newTestMap.keySet()) {
+            if (network.getBSSID().contains("04:62:73:48:a6:")) {
+                positions.put(network.getSSID(),newTestMap.get(network));
+            }
+            }
+        JSONObject jsonObject = new JSONObject(positions);
+        String jsonString = jsonObject.toString();
+        FileWriter writer;
+        String sdcard = Environment.getExternalStorageDirectory().getAbsolutePath();
+        String file = sdcard + File.separator + "posizioni.txt";
+        try {
+            writer = new FileWriter(file, true);
+            writer.write(jsonString);
+            writer.flush();
+            writer.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+       }
+    }
+
     private String getPosition(double z) {
+        //TODO
         SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
-        int approachingThres = preferences.getInt(ThresholdActivity.PREF_APPROACHING, 2);
-        int leavingThres = preferences.getInt(ThresholdActivity.PREF_LEAVING,2);
+        double approachingThres = NetworkManager.getDouble(preferences,ThresholdActivity.PREF_APPROACHING, 2);
+        double leavingThres = NetworkManager.getDouble(preferences,ThresholdActivity.PREF_LEAVING,2);
 
-        if((Math.abs(z)<=approachingThres && (Math.abs(this.positiveDifference-this.negativeDifference))<=this.nullDifference))
+        if(z<=0.02)
             return "chaotic motion";
-        if (z>=approachingThres && this.positiveDifference>this.negativeDifference)
-            return "approaching";
         else
-        if(z<=leavingThres && this.negativeDifference>this.positiveDifference)
-            return "leaving";
-
-        return "indeterminable";
+            return "regular motion";
     }
 
     private double calculateVariance(List<Integer> values, double mean) {
@@ -88,8 +129,8 @@ public class TestManager {
         return variance / (double)numElements;
     }
 
-    private int calculateMean(List<Integer> values) {
-        int sum = 0;
+    private double calculateMean(List<Integer> values) {
+        double sum = 0;
         for (Integer rssi :
                 values) {
             sum += rssi;
@@ -252,17 +293,61 @@ public class TestManager {
 
     public HashMap<WifiNetwork, String> getInvertedResults() throws Exception {
         HashMap<WifiNetwork,String> invertedTestMap = new HashMap<>();
-        Map<String,List<Integer>> rssiMap = networkManager.getRSSImap();
-        Map<String,WifiNetwork> networkMap = networkManager.getNetworks();
-        for (String ssid :
-                networkMap.keySet()) {
-            calculateDifference(rssiMap.get(ssid));
-            int mean = calculateMean(rssiMap.get(ssid));
-            double variance = calculateVariance(rssiMap.get(ssid),mean);
+        Map<String,List<Integer>> BSSIDtoRSSI = networkManager.getBSSIDtoRSSI();
+        Map<String,WifiNetwork> BSSIDtoWifiNetwork = networkManager.getBSSIDtoWifiNetwork();
+        for (String BSSID :
+                BSSIDtoWifiNetwork.keySet()) {
+            calculateDifference(BSSIDtoRSSI.get(BSSID));
+            double mean = calculateMean(BSSIDtoRSSI.get(BSSID));
+            double variance = calculateVariance(BSSIDtoRSSI.get(BSSID),mean);
             double z = (Math.pow(mean,2)/variance)*invErf(1.0 - 2.0*PFA);
             String position = getPosition(z);
-            invertedTestMap.put(networkMap.get(ssid),position);
+            invertedTestMap.put(BSSIDtoWifiNetwork.get(BSSID),position);
         }
         return invertedTestMap;
+    }
+
+    public HashMap<WifiNetwork, Double> getNewTestVariables() throws Exception {
+        HashMap<WifiNetwork,Double> newTestVariables = new HashMap<>();
+        Map<String,List<Integer>> BSSIDtoRSSI = networkManager.getBSSIDtoRSSI();
+        Map<String,WifiNetwork> BSSIDtoWifiNetwork = networkManager.getBSSIDtoWifiNetwork();
+        for (String BSSID :
+                BSSIDtoWifiNetwork.keySet()) {
+            double mean = calculateMean(BSSIDtoRSSI.get(BSSID));
+            double variance = calculateVariance(BSSIDtoRSSI.get(BSSID),mean);
+            double z = ((variance/Math.pow(mean,2)));
+            newTestVariables.put(BSSIDtoWifiNetwork.get(BSSID),z);
+        }
+        return newTestVariables;
+    }
+
+    public HashMap<WifiNetwork, Double> getOldTestVariables() {
+        HashMap<WifiNetwork,Double> oldTestVariables = new HashMap<>();
+        Map<String,List<Integer>> BSSIDtoRSSI = networkManager.getBSSIDtoRSSI();
+        Map<String,WifiNetwork> BSSIDtoWifiNetwork = networkManager.getBSSIDtoWifiNetwork();
+        for (String BSSID :
+                BSSIDtoWifiNetwork.keySet()) {
+            double artMean = calculateMean(BSSIDtoRSSI.get(BSSID));
+            double wheMean= calculateWheMean(BSSIDtoRSSI.get(BSSID));
+            double z = wheMean - artMean;
+            oldTestVariables.put(BSSIDtoWifiNetwork.get(BSSID),z);
+        }
+        return oldTestVariables;
+    }
+
+    private int calculateWheMean(List<Integer> integers) {
+        int i = 1;
+        int sumRssi=0 , sumI=0;
+        for (int value :
+                integers) {
+            sumRssi += value*i;
+            sumI += i;
+            i++;
+        }
+        return sumRssi/sumI;
+    }
+
+    public HashMap<WifiNetwork, Integer> getNumRSSI() {
+        return this.networkManager.getNumRSSI();
     }
 }

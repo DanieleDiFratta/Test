@@ -40,7 +40,7 @@ public class ChannelManager {
         for (ScanResult result:
              results) {
             Channel ch = channels.get(result.frequency);
-            WifiNetwork network = new WifiNetwork(result.frequency,result.level,result.SSID);
+            WifiNetwork network = new WifiNetwork(result.frequency,result.level,result.SSID,result.BSSID);
             if(ch!=null)
                 ch.addNetwork(network);
             network.setChannel(ch);

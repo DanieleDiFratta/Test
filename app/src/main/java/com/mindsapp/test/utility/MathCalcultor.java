@@ -11,27 +11,28 @@ import java.util.List;
  */
 public class MathCalcultor {
 
-    public static double calculateVariance(List<Integer> testVariables, double mean) {
+    public static double calculateVariance(List<Double> testVariables, double mean) {
         double variance = 0;
         int numElements = testVariables.size();
 
         for(double d : testVariables)
             variance += Math.pow(d - mean, 2);
 
-        return variance / (double)numElements;
+        return variance / numElements;
     }
 
-    public static int calculateArtMean(List<Integer> partialValues) {
-        int sum = 0;
-        for (Integer rssi :
+    public static double calculateArtMean(List<Double> partialValues) {
+        double sum = 0;
+        for (double rssi :
                 partialValues) {
             sum += rssi;
         }
         return sum/partialValues.size();
     }
 
-    public static int calculateWheMean(List<Integer> partialValues) {
-        int num=0,den=0,whe=1;
+    public static double calculateWheMean(List<Integer> partialValues) {
+        int den=0,whe=1;
+        double num=0;
         for (Integer rssi :
                 partialValues) {
             num += whe * rssi;
@@ -177,5 +178,24 @@ public class MathCalcultor {
 
         }
 
+    }
+
+    public static double calculateIntArtMean(List<Integer> partialValues) {
+        double sum = 0;
+        for (double rssi :
+                partialValues) {
+            sum += rssi;
+        }
+        return sum/partialValues.size();
+    }
+
+    public static double calculateIntVariance(List<Integer> partialValues, double mean) {
+        double variance = 0;
+        int numElements = partialValues.size();
+
+        for(double d : partialValues)
+            variance += Math.pow(d - mean, 2);
+
+        return variance / numElements;
     }
 }

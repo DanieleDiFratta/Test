@@ -12,15 +12,17 @@ public class WifiNetwork implements Serializable{
     private int RSSI;
     private Channel channel;
     private String SSID;
+    private String BSSID;
 
-    public WifiNetwork(int frequency, int RSSI, String SSID) {
+    public WifiNetwork(int frequency, int RSSI, String SSID, String BSSID) {
         this.frequency = frequency;
         this.RSSI = RSSI;
         this.SSID = SSID;
+        this.BSSID = BSSID;
     }
 
     public WifiNetwork(ScanResult result) {
-        this(result.frequency, result.level, result.SSID);
+        this(result.frequency, result.level, result.SSID, result.BSSID);
     }
 
     public WifiNetwork(String SSID) {
@@ -65,6 +67,7 @@ public class WifiNetwork implements Serializable{
                 "frequency=" + frequency +
                 ", RSSI=" + RSSI +
                 ", SSID='" + SSID + '\'' +
+                ", BSSID='" + BSSID + '\'' +
                 '}';
     }
 
@@ -75,12 +78,19 @@ public class WifiNetwork implements Serializable{
 
         WifiNetwork that = (WifiNetwork) o;
 
-        return !(SSID != null ? !SSID.equals(that.SSID) : that.SSID != null);
+        if (!SSID.equals(that.SSID)) return false;
+        return BSSID.equals(that.BSSID);
 
     }
 
     @Override
     public int hashCode() {
-        return SSID != null ? SSID.hashCode() : 0;
+        int result = SSID.hashCode();
+        result = 31 * result + BSSID.hashCode();
+        return result;
+    }
+
+    public String getBSSID() {
+        return BSSID;
     }
 }

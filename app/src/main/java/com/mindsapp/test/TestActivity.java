@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,11 +28,13 @@ public class TestActivity extends AppCompatActivity {
     private ListView lv;
     private BroadcastReceiver broadcastReceiver;
     private BroadcastReceiver scanReciever;
+    private Context activityContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        activityContext = this;
         progressDialog = new ProgressDialog(this);
         progressDialog.setMax(TestService.TOTAL_SCAN_NUM);
         progressDialog.setProgress(0);
@@ -45,9 +48,12 @@ public class TestActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 HashMap<WifiNetwork,String> oldTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("oldTestMap");
                 HashMap<WifiNetwork,String> newTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("newTestMap");
-                HashMap<WifiNetwork,String> invertedTestMap = (HashMap<WifiNetwork, String>) intent.getSerializableExtra("invertedTestMap");
+                HashMap<WifiNetwork,Integer> oldTestVariables = (HashMap<WifiNetwork, Integer>) intent.getSerializableExtra("oldTestVariables");
+                HashMap<WifiNetwork,Integer> newTestVariables = (HashMap<WifiNetwork, Integer>) intent.getSerializableExtra("newTestVariables");
+                HashMap<WifiNetwork,Integer> numRSSI = (HashMap<WifiNetwork, Integer>) intent.getSerializableExtra("numRSSI");
                 progressDialog.dismiss();
-                showResult(oldTestMap,newTestMap,invertedTestMap);
+                showResult(oldTestMap,newTestMap,oldTestVariables,newTestVariables,numRSSI);
+                startService(new Intent(activityContext,TestService.class));
             }
         };
         scanReciever = new BroadcastReceiver() {
@@ -66,13 +72,17 @@ public class TestActivity extends AppCompatActivity {
         TestService.activityVisible = true;
     }
 
-    public void showResult(HashMap<WifiNetwork, String> oldTestMap, HashMap<WifiNetwork, String> newTestMap, HashMap<WifiNetwork, String> invertedTestMap){
+    public void showResult(HashMap<WifiNetwork, String> oldTestMap, HashMap<WifiNetwork, String> newTestMap, HashMap<WifiNetwork, Integer> oldTestVariables, HashMap<WifiNetwork, Integer> newTestVariables, HashMap<WifiNetwork, Integer> numRSSI){
         ArrayList<String> wifiList = new ArrayList<>();
         for (WifiNetwork network :
                 oldTestMap.keySet()) {
-            String info = network.getSSID() + " (old: " + oldTestMap.get(network) + ", new: " + newTestMap.get(network)
-                    + ", inv: " + invertedTestMap.get(network) + ")";
-            wifiList.add(info);
+            if(network.getBSSID().contains("04:62:73:48:a6:")) {
+                String info = network.getSSID() + ": " + network.getBSSID() + " (old: " + oldTestMap.get(network) + ", new: " + newTestMap.get(network)
+                        + ")" + "\nOld Test Variable: " + oldTestVariables.get(network)
+                        + ", New Test Variable: " + newTestVariables.get(network)
+                        + ", Num RSSI: " + numRSSI.get(network);
+                wifiList.add(info);
+            }
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,wifiList);
         lv.setAdapter(adapter);
@@ -150,19 +160,27 @@ public class TestActivity extends AppCompatActivity {
             HashMap<WifiNetwork,String> oldTestMap = this.testManager.getOldResults();
             HashMap<WifiNetwork,String> newTestMap = null;
             HashMap<WifiNetwork,String> invertedTestMap = null;
+            HashMap<WifiNetwork,Double> oldTestVariables = null;
+            HashMap<WifiNetwork, Double> newTestVariables = null;
+            HashMap<WifiNetwork,Integer> numRSSI = this.testManager.getNumRSSI();
             try {
                 newTestMap = this.testManager.getNewResults();
                 invertedTestMap = this.testManager.getInvertedResults();
+                oldTestVariables = this.testManager.getOldTestVariables();
+                newTestVariables = this.testManager.getNewTestVariables();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            testManager.updateRSSIMap();
-            testManager.saveRSSI();
+            //testManager.updateRSSIMap();
+            //testManager.saveRSSI();
             Intent intent = new Intent();
             intent.setAction("com.mindsapp.test.action.SCAN_FINISHED_TEST_ACTION");
             intent.putExtra("oldTestMap", oldTestMap);
             intent.putExtra("newTestMap",newTestMap);
             intent.putExtra("invertedTestMap",invertedTestMap);
+            intent.putExtra("oldTestVariables",oldTestVariables);
+            intent.putExtra("newTestVariables",newTestVariables);
+            intent.putExtra("numRSSI",numRSSI);
             sendBroadcast(intent);
         }
     }

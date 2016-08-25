@@ -158,12 +158,14 @@ public class ChartsActivity extends AppCompatActivity {
 
             for (ScanResult result :
                     manager.getScanResults()) {
-                ILineDataSet set = data.getDataSetByLabel(result.SSID, true);
-                if (set == null) {
-                    set = createSet(result.SSID);
-                    data.addDataSet(set);
+                if(result.BSSID.contains("")) {
+                    ILineDataSet set = data.getDataSetByLabel(result.SSID, true);
+                    if (set == null) {
+                        set = createSet(result.SSID);
+                        data.addDataSet(set);
+                    }
+                    data.addEntry(new Entry(result.level, data.getXValCount()), data.getIndexOfDataSet(set));
                 }
-                data.addEntry(new Entry(result.level, data.getXValCount()), data.getIndexOfDataSet(set));
             }
 
             data.addXValue("");
@@ -181,7 +183,7 @@ public class ChartsActivity extends AppCompatActivity {
         private ILineDataSet createSet(String SSID) {
             LineDataSet set = new LineDataSet(null, SSID);
             set.setAxisDependency(YAxis.AxisDependency.LEFT);
-            set.setColor(ChartColor.LINE_CHART_COLORS[powerChart.getLineData().getDataSetCount()%5]);
+            set.setColor(ChartColor.LINE_CHART_COLORS[powerChart.getLineData().getDataSetCount()]);
             set.setCircleColor(Color.BLACK);
             set.setLineWidth(2f);
             set.setCircleRadius(4f);
@@ -237,7 +239,7 @@ public class ChartsActivity extends AppCompatActivity {
                  channels) {
                 for (WifiNetwork ntw :
                         ch.getNetworks()) {
-                    if (ntw != null) {
+                    if (ntw != null && ntw.getBSSID().contains("")) {
                         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                         yVals1.add(new BarEntry(ntw.getRSSI(), ch.getId()-1));
                         BarDataSet set = new BarDataSet(yVals1, ntw.getSSID());

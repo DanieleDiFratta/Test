@@ -46,8 +46,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         applicationContext = getApplicationContext();
 
-        Log.i(getApplicationInfo().name,getSharedPreferences(NetworkManager.NETWORK_PREF,Activity.MODE_PRIVATE)
-                .getString(NetworkManager.RSSI_MAP,"non ci sono salvate"));
+        Log.i("Leaving Thres", String.valueOf(getSharedPreferences(RSSICollectorActivity.RSSI_COLLECTOR_PREFERENCES, Activity.MODE_PRIVATE).getLong("LeavingThres",0l)));
 
         //pemissions
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog = adBuilder.create();
             alertDialog.show();
         }
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+       /* if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             AlertDialog.Builder adBuilder = new AlertDialog.Builder(MainActivity.this);
             adBuilder.setTitle("GPS is Disabled");
             adBuilder
@@ -105,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     });
             alertDialog = adBuilder.create();
             alertDialog.show();
-        }
+        }*/
         Button thresholdButton = (Button) findViewById(R.id.thresholdButton);
         thresholdButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,14 +142,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, RSSICollectorActivity.class);
-                startActivity(intent);
-            }
-        });
-        Button testButton = (Button) findViewById(R.id.testButton);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TestActivity.class);
                 startActivity(intent);
             }
         });

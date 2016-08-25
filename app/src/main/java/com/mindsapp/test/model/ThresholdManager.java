@@ -33,7 +33,7 @@ public class ThresholdManager {
         String line;
         while ((line = reader.readLine())!=null){
             String values [] = line.split("\t");
-            Threshold temp = new Threshold(values[0],Integer.parseInt(values[1]),Integer.parseInt(values[2]));
+            Threshold temp = new Threshold(values[0],Double.parseDouble(values[1]),Double.parseDouble(values[2]),Double.parseDouble(values[3]));
             thresholdList.add(temp);
         }
         reader.close();
@@ -47,10 +47,16 @@ public class ThresholdManager {
         SharedPreferences preferences = MainActivity.getContextofApplication().getSharedPreferences(ThresholdActivity.THRES_PREF, Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(ThresholdActivity.PREF_PLACE,threshold.getPlace());
-        editor.putInt(ThresholdActivity.PREF_APPROACHING, threshold.getApproachingThres());
-        editor.putInt(ThresholdActivity.PREF_LEAVING, threshold.getLeavingThres());
+        putDouble(editor,ThresholdActivity.PREF_CHAOTIC, threshold.getChaoticThres());
+        putDouble(editor,ThresholdActivity.PREF_APPROACHING, threshold.getApproachingThres());
+        putDouble(editor,ThresholdActivity.PREF_LEAVING, threshold.getLeavingThres());
         editor.apply();
     }
+
+    SharedPreferences.Editor putDouble(final SharedPreferences.Editor edit, final String key, final double value) {
+        return edit.putLong(key, Double.doubleToRawLongBits(value));
+    }
+
 
     public List<Threshold> getThresholdList() {
         return thresholdList;
